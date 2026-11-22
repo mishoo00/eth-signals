@@ -4,24 +4,48 @@ import requests
 token = os.environ["TELEGRAM_TOKEN"]
 chat_id = os.environ["TELEGRAM_CHAT_ID"]
 
-sources = {
-    "Binance": ("https://api.binance.com/api/v3/ticker/price", {"symbol": "ETHUSDT"}),
-    "BinanceVision": ("https://data-api.binance.vision/api/v3/ticker/price", {"symbol": "ETHUSDT"}),
-    "Bybit": ("https://api.bybit.com/v5/market/tickers", {"category": "spot", "symbol": "ETHUSDT"}),
-    "OKX": ("https://www.okx.com/api/v5/market/ticker", {"instId": "ETH-USDT"}),
-    "Coinbase": ("https://api.coinbase.com/v2/prices/ETH-USD/spot", {}),
-    "Kraken": ("https://api.kraken.com/0/public/Ticker", {"pair": "ETHUSD"}),
-}
+r = requests.get(
+    "https://data-api.binance.vision/api/v3/klines",
+    params={"symbol": "ETHUSDT", "interval": "5m", "limit": 200},
+    timeout=15,
+)
+candles = r.json()
+closes = [float(c[4]) for c in candles]
 
-lines = []
-for name, (url, params) in sources.items():
-    try:
-        r = requests.get(url, params=params, timeout=15)
-        lines.append(f"{name}: {r.status_code}")
-    except Exception:
-        lines.append(f"{name}: failed")
 
-msg = "نتيجة فحص المصادر:\n" + "\n".join(lines)
+def ema(values, n):
+    k = 2 / (n + 1)
+    e = values[0]
+    for v in values[1:]:
+        e = v * k + e * (1 - k)
+    return e
+
+
+def rsi(values, n=14):
+    gains, losses = [], []
+    for i in range(1, len(values)):
+        d = values[i] - values[i - 1]
+        gains.append(max(d, 0))
+        losses.append(max(-d, 0))
+    ag = sum(gains[:n]) / n
+    al = sum(losses[:n]) / n
+    for i in range(n, len(gains)):
+        ag = (ag * (n - 1) + gains[i]) / n
+        al = (al * (n - 1) + losses[i]) / n
+    if al == 0:
+        return 100.0
+    return 100 - 100 / (1 + ag / al)
+
+
+msg = (
+    "اختبار المؤشرات ✅\n"
+    f"عدد الشموع: {len(closes)}\n"
+    f"آخر إغلاق: {closes[-1]:.2f}\n"
+    f"EMA20: {ema(closes, 20):.2f}\n"
+    f"EMA50: {ema(closes, 50):.2f}\n"
+    f"RSI14: {rsi(closes):.1f}"
+)
+
 requests.post(
     f"https://api.telegram.org/bot{token}/sendMessage",
     data={"chat_id": chat_id, "text": msg},
