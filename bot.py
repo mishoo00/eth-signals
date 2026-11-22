@@ -3,7 +3,7 @@ import requests
 
 token = os.environ["TELEGRAM_TOKEN"]
 chat_id = os.environ["TELEGRAM_CHAT_ID"]
-manual = os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+manual = os.environ.get("MODE") == "manual"
 
 r = requests.get(
     "https://data-api.binance.vision/api/v3/klines",
