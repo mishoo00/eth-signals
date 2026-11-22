@@ -1,8 +1,10 @@
 name: ETH Signals
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "2-59/5 * * * *"
+    inputs:
+      mode:
+        description: "manual or auto"
+        default: "manual"
 
 jobs:
   run:
@@ -15,5 +17,6 @@ jobs:
       - run: pip install requests
       - run: python bot.py
         env:
+          MODE: ${{ github.event.inputs.mode }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
