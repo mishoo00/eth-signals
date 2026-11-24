@@ -19,13 +19,14 @@ jobs:
           import os, hmac, base64, hashlib, requests
           from datetime import datetime, timezone
           B = "https://www.okx.com"
+          def clean(v):
+              return "".join(c for c in v if 33 <= ord(c) <= 126)
           rawK = os.environ.get("OKX_API_KEY", "")
           rawS = os.environ.get("OKX_API_SECRET", "")
           rawP = os.environ.get("OKX_PASSPHRASE", "")
-          K, S, P = rawK.strip(), rawS.strip(), rawP.strip()
+          K, S, P = clean(rawK), clean(rawS), clean(rawP)
           for n, r, v in (("KEY", rawK, K), ("SECRET", rawS, S), ("PASS", rawP, P)):
-              print(n, "raw_len", len(r), "clean_len", len(v), "has_space", (" " in v), "has_newline", ("\n" in v))
-          print("key_equals_secret", K == S)
+              print(n, "raw_len", len(r), "clean_len", len(v), "removed", len(r) - len(v))
           def show(name, r):
               print(name, "HTTP", r.status_code)
               try:
