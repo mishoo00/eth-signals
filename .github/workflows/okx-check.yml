@@ -19,11 +19,13 @@ jobs:
           import os, hmac, base64, hashlib, requests
           from datetime import datetime, timezone
           B = "https://www.okx.com"
-          K = os.environ.get("OKX_API_KEY", "")
-          S = os.environ.get("OKX_API_SECRET", "")
-          P = os.environ.get("OKX_PASSPHRASE", "")
-          for n, v in (("KEY", K), ("SECRET", S), ("PASSPHRASE", P)):
-              print(n, "set" if v else "MISSING")
+          rawK = os.environ.get("OKX_API_KEY", "")
+          rawS = os.environ.get("OKX_API_SECRET", "")
+          rawP = os.environ.get("OKX_PASSPHRASE", "")
+          K, S, P = rawK.strip(), rawS.strip(), rawP.strip()
+          for n, r, v in (("KEY", rawK, K), ("SECRET", rawS, S), ("PASS", rawP, P)):
+              print(n, "raw_len", len(r), "clean_len", len(v), "has_space", (" " in v), "has_newline", ("\n" in v))
+          print("key_equals_secret", K == S)
           def show(name, r):
               print(name, "HTTP", r.status_code)
               try:
@@ -33,22 +35,17 @@ jobs:
                   return None
               print("  code:", j.get("code"), "msg:", j.get("msg"))
               return j
-          show("1 public time", requests.get(B + "/api/v5/public/time", timeout=15))
-          j = show("2 ETH-USDT-SWAP", requests.get(B + "/api/v5/public/instruments", params={"instType": "SWAP", "instId": "ETH-USDT-SWAP"}, timeout=15))
-          if j and j.get("data"):
-              d = j["data"][0]
-              print("  ctVal", d.get("ctVal"), "lotSz", d.get("lotSz"), "minSz", d.get("minSz"), "state", d.get("state"))
           def private(path):
               now = datetime.now(timezone.utc)
               ts = now.strftime("%Y-%m-%dT%H:%M:%S.") + f"{now.microsecond // 1000:03d}Z"
               sig = base64.b64encode(hmac.new(S.encode(), (ts + "GET" + path).encode(), hashlib.sha256).digest()).decode()
               h = {"OK-ACCESS-KEY": K, "OK-ACCESS-SIGN": sig, "OK-ACCESS-TIMESTAMP": ts, "OK-ACCESS-PASSPHRASE": P, "x-simulated-trading": "1"}
               return requests.get(B + path, headers=h, timeout=15)
-          j = show("3 account config", private("/api/v5/account/config"))
+          j = show("A account config", private("/api/v5/account/config"))
           if j and j.get("data"):
               d = j["data"][0]
               print("  acctLv", d.get("acctLv"), "posMode", d.get("posMode"))
-          j = show("4 demo balance", private("/api/v5/account/balance"))
+          j = show("B demo balance", private("/api/v5/account/balance"))
           if j and j.get("data"):
               for x in j["data"][0].get("details", []):
                   print("  ", x.get("ccy"), x.get("availBal"))
