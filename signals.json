@@ -322,7 +322,7 @@
   "entry": 1685.22,
   "sl": 1675.55,
   "tp": 1709.39,
-  "status": "open",
+  "status": "tp",
   "exec": {
    "status": "closed",
    "mode": "demo",
@@ -333,6 +333,7 @@
    "pnl_usd": 4.49,
    "closed_day": "2026-11-26",
    "closed_ts": 1795652125
-  }
+  },
+  "r": 2.36
  }
 ]
