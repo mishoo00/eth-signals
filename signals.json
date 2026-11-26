@@ -362,14 +362,18 @@
   "entry": 1689.76,
   "sl": 1693.9,
   "tp": 1679.41,
-  "status": "open",
+  "status": "sl",
   "exec": {
-   "status": "open",
+   "status": "closed",
    "mode": "demo",
    "ordId": "4133155839515480064",
    "sz": 2.95,
    "fill": 1688.9301016949153,
-   "open_ts": 1795680042691
-  }
+   "open_ts": 1795680042691,
+   "pnl_usd": -1.99,
+   "closed_day": "2026-11-26",
+   "closed_ts": 1795683028
+  },
+  "r": -1.327
  }
 ]
