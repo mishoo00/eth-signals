@@ -460,12 +460,15 @@
   "tp": 1750.07,
   "status": "open",
   "exec": {
-   "status": "open",
+   "status": "closed",
    "mode": "demo",
    "ordId": "4135983761611739136",
    "sz": 2.87,
    "fill": 1736.73968641115,
-   "open_ts": 1795764321345
+   "open_ts": 1795764321345,
+   "pnl_usd": -1.86,
+   "closed_day": "2026-11-27",
+   "closed_ts": 1795764634
   }
  }
 ]
