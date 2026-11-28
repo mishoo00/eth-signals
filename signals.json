@@ -558,12 +558,15 @@
   "tp": 1643.33,
   "status": "open",
   "exec": {
-   "status": "open",
+   "status": "closed",
    "mode": "demo",
    "ordId": "4138983804119732224",
    "sz": 3.02,
    "fill": 1653.5900662251656,
-   "open_ts": 1795853729557
+   "open_ts": 1795853729557,
+   "pnl_usd": 2.17,
+   "closed_day": "2026-11-28",
+   "closed_ts": 1795863029
   }
  }
 ]
